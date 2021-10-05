@@ -1,12 +1,13 @@
 <?php
 interface CRUD_api{
     public function read_by_dni(int $dni, string $tabla);
+    public function get_all();
 }
 class Conexion implements CRUD_api {
     private $con;
     public function __construct()
     {
-        $this->con=new PDO("mysql:localhost", "root", "");
+        $this->con=new PDO('mysql:host=localhost;dbname=prueba2', "root", "");
     }
 
     public function read_by_dni(int $dni, string $tabla)
@@ -17,9 +18,15 @@ class Conexion implements CRUD_api {
         
         $prepared=$this->con->prepare($stament);
         $prepared->bindValue(1, $dni);
+        $prepared->execute();
 
-        return $prepared->execute();
+        return $prepared->fetchAll();
 
+    }
+    public function get_all()
+    {   
+
+        return array_values(($this->con->query("SELECT * FROM user_tb WHERE rol=0"))->fetchAll(PDO::FETCH_ASSOC));
     }
 }
 
